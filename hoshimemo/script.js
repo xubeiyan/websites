@@ -10,7 +10,7 @@ var img = [],
 			img[i].src = imgLists[i];
 			img[i].onload = function () {
 				loaded += 1;
-				if (loaded == 3) {
+				if (loaded == imgLists.length) {
 					brickDraw(0, 0, img[0]);
 				}
 			}
@@ -27,7 +27,10 @@ var img = [],
 			currentImg = next + 1;
 		}
 	},
-	
+	currentTransactionMethod = 0,
+	getRandomNextTransactionMethod = function () {
+		currentTransactionMethod = Math.floor(Math.random() * 2);
+	},
 	canvasContext = canvasStage.getContext("2d"),
 	widthGrid = 16,
 	heightGrid = 12,
@@ -36,7 +39,6 @@ var img = [],
 	brickDrawGridTime = 100,
 	brickDrawPicTime = 2000,
 	brickDraw = function (x, y, image) {
-		
 		var sW = window.innerWidth,
 			sH = window.innerWidth * image.height / image.width,
 			dW = image.width,
@@ -47,7 +49,7 @@ var img = [],
 		// console.log('dw:', dW, 'dH:', dH);
 		
 		// canvasContext.drawImage(image, 0, 0, sW, sH);
-		console.log(x, y);
+		// console.log(x, y);
 		canvasContext.drawImage(image, x * widthLength, y * heightLength,
 			widthLength, widthLength, x * widthLength, y * heightLength, widthLength, widthLength);
 			
@@ -63,30 +65,57 @@ var img = [],
 				}, brickDrawGridTime);
 			} else {
 				getRandomNextImg();
-				setTimeout(function () {
-					brickDraw(0, 0, img[currentImg]);
-				}, brickDrawPicTime);
+				getRandomNextTransactionMethod();
+				if (currentTransactionMethod == 0) {
+					setTimeout(function () {
+						brickDraw(0, 0, img[currentImg]);
+					}, brickDrawPicTime);
+				} else {
+					setTimeout(function () {
+						brickDrawReverse(15, 0, img[currentImg]);
+					}, brickDrawPicTime);
+				}
+				
 			}
 		}
 	},
-	resize = function () {
-		// console.log(window.innerWidth, window.innerHeight);
-		canvasStage.width = window.innerWidth;
-		canvasStage.height = canvasStage.width * 3 / 4;
-		// canvasStage.style.width = '' + canvasStage.width + 'px';
-		// canvasStage.style.height = '' + canvasStage.height + 'px';
-		brickDraw(0, 0, img[0]);
+	brickDrawReverse = function (x, y, image) {
+		canvasContext.drawImage(image, x * widthLength, y * heightLength,
+			widthLength, widthLength, x * widthLength, y * heightLength, widthLength, widthLength);
+			
+		if (x - 1 >= 0) {
+			setTimeout(function () {
+				brickDrawReverse(x - 1, y, image);
+			}, brickDrawGridTime);		
+		} else {
+			if (y + 1 < heightGrid) {
+				x = 15;
+				setTimeout(function () {
+					brickDrawReverse(x, y + 1, image);
+				}, brickDrawGridTime);
+			} else {
+				getRandomNextImg();
+				getRandomNextTransactionMethod();
+				if (currentTransactionMethod == 0) {
+					setTimeout(function () {
+						brickDraw(0, 0, img[currentImg]);
+					}, brickDrawPicTime);
+				} else {
+					setTimeout(function () {
+						brickDrawReverse(15, 0, img[currentImg]);
+					}, brickDrawPicTime);
+				};
+			}
+		}
 	};
 	
 window.onload = function () {
 	preload([
 		'hoshimemo/03-2.jpg',
-		// 'hoshimemo/05.jpg',
+		'hoshimemo/05.jpg',
 		'hoshimemo/06.jpg',
 		'hoshimemo/07.jpg',
 	]);
 };
-
-window.addEventListener('resize', resize, false);
 	
 
