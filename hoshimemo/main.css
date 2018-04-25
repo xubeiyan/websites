@@ -17,6 +17,8 @@ div.motto {
 
 canvas {
 	/* box-shadow: 1px 1px 2px #EEE; */
+	width: 1600px;
+	height: 1200px;
 }
 
 span.text {

@@ -2,9 +2,8 @@ var img = [],
 	loaded = 0,
 	canvasStage = document.getElementById("stage"),
 	preload = function (imgLists) {
-		canvasStage.width = window.innerWidth;
-		canvasStage.height = canvasStage.width * 3 / 4;
-		
+		canvasStage.style.width = window.innerWidth;
+		canvasStage.style.height = window.innerWidth * 3 / 4;
 		for (var i = 0; i < imgLists.length; ++i) {
 			img[i] = new Image();
 			img[i].src = imgLists[i];
@@ -39,17 +38,6 @@ var img = [],
 	brickDrawGridTime = 100,
 	brickDrawPicTime = 2000,
 	brickDraw = function (x, y, image) {
-		var sW = window.innerWidth,
-			sH = window.innerWidth * image.height / image.width,
-			dW = image.width,
-			dH = image.height;
-		// console.log('height: ', image.height)
-		// console.log('width: ', image.width)
-		// console.log('sw:', sW, 'sH:', sH);
-		// console.log('dw:', dW, 'dH:', dH);
-		
-		// canvasContext.drawImage(image, 0, 0, sW, sH);
-		// console.log(x, y);
 		canvasContext.drawImage(image, x * widthLength, y * heightLength,
 			widthLength, widthLength, x * widthLength, y * heightLength, widthLength, widthLength);
 			
@@ -109,13 +97,18 @@ var img = [],
 		}
 	};
 	
-window.onload = function () {
+window.addEventListener('load', function () {
 	preload([
 		'hoshimemo/03-2.jpg',
 		'hoshimemo/05.jpg',
 		'hoshimemo/06.jpg',
 		'hoshimemo/07.jpg',
 	]);
-};
+}, false);
+
+window.addEventListener('resize', function () {
+	canvasStage.style.width = window.innerWidth;
+	canvasStage.style.height = window.innerWidth * 3 / 4;
+}, false)
 	
 
