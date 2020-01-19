@@ -1,0 +1,8 @@
+body {
+	margin: 0px;
+}
+
+canvas {
+	width: 3840px;
+	height: 2160px;
+}
