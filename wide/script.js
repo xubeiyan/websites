@@ -6,8 +6,15 @@
 
 var canvas = document.getElementById('stage'),
 	context = canvas.getContext('2d'),
+	// 输出日志
+	logLevel = 'info', // 有info, warn, none三个级别
+	log = function (type, content) {
+		if (logLevel == 'info') {
+			console.log(`[${type}]${content}`);
+		}
+	},
 	// 切换等待用时
-	elapseTime = 2000,
+	elapseTime = 5000,
 	img = [],
 	// 绘制状态loading, drawing, error
 	status = 'loading', 
@@ -43,13 +50,13 @@ var canvas = document.getElementById('stage'),
 			newimg.src = imageList[i];
 			// 图片加载成功后回调函数
 			newimg.onload = function () {
-				console.log(`[IMAGE]loaded "${newimg.src}" success!`);
+				log('IMAGE', `loaded "${newimg.src}" success!`);
 				img.push(newimg);
-				// 如果有图片加载成功了且绘制状态为loading则开始绘制
+				// 如果有2张图片加载成功了且绘制状态为loading则开始绘制
 				if (img.length > 1 && status == 'loading') {
 					draw(0);
 					status = 'drawing';
-					console.log(`[STATUS]to ${status}`);
+					log('STATUS', `to ${status}`);
 				}
 			}
 		}
@@ -63,11 +70,14 @@ var canvas = document.getElementById('stage'),
 		}, elapseTime)
 	}
 	
-resizeWindow();
-loadImage(imageList);
+// 页面加载完成后开始加载图片
+window.addEventListener('load', function() {
+	loadImage(imageList);
+});
 
-
+// 缩放窗口触发调整函数
 window.addEventListener('resize', function () {
 	resizeWindow();
 }, false);
 
+resizeWindow();
