@@ -33,8 +33,8 @@ var img = [],
 	canvasContext = canvasStage.getContext("2d"),
 	widthGrid = 16,
 	heightGrid = 12,
-	widthLength = 1600 / widthGrid,
-	heightLength = 1200 / heightGrid,
+	widthLength = 1280 / widthGrid,
+	heightLength = 960 / heightGrid,
 	brickDrawGridTime = 100,
 	brickDrawPicTime = 2000,
 	brickDraw = function (x, y, image) {
@@ -99,10 +99,11 @@ var img = [],
 	
 window.addEventListener('load', function () {
 	preload([
-		'hoshimemo/03-2.jpg',
-		'hoshimemo/05.jpg',
-		'hoshimemo/06.jpg',
-		'hoshimemo/07.jpg',
+		'hoshimemo/MARE_FD_e02c.jpg',
+		'hoshimemo/MARE_FD_e03a.jpg',
+		'hoshimemo/MARE_FD_e04b.jpg',
+		'hoshimemo/MARE_FD_e05c.jpg',
+		'hoshimemo/MARE_FD_e06e.jpg',
 	]);
 }, false);
 
