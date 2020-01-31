@@ -112,4 +112,9 @@ window.addEventListener('resize', function () {
 	canvasStage.style.height = window.innerWidth * 3 / 4;
 }, false)
 	
+window.onload = function () {
+	if (window.innerWidth > 1280) {
+		window.location.href = 'wide.html';
+	}
+}
 
