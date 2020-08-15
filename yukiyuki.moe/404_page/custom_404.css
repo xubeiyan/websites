@@ -1,0 +1,45 @@
+body {
+	margin: 0;
+	font-family: "Microsoft YaHei";
+}
+
+header, main, footer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+}
+
+header {
+	height: 20em;
+}
+
+main {
+	flex-direction: column;
+}
+
+main>div {
+	display: flex;
+	align-items: center;
+}
+
+main>div>h1 {
+	font-size: 15em;
+	margin: 0em;
+	margin-right: 0.5em;
+}
+
+main>p {
+	font-size: 2em;
+}
+
+footer {
+	position: absolute;
+	justify-content: space-around;
+	bottom: 0;
+}
+
+footer>span {
+	font-size: 0.8em;
+	color: #999;
+}
