@@ -29,6 +29,10 @@ main>div>h1 {
 	margin-right: 0.5em;
 }
 
+main>div>img {
+	width: 250px;
+}
+
 main>p {
 	font-size: 2em;
 }
