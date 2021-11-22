@@ -14,10 +14,6 @@ div#mine {
 	background-color: #EEE;
 }
 
-div#stats {
-
-}
-
 div#control.hide {
 	display: none;
 }
@@ -27,7 +23,7 @@ div.pic {
 	height: 40px; 
 	background-image:url('images/ms.png');
 	display: inline-block;
-	float: left; 
+	float: left;
 }
 div.zero { background-position: 0px 0px; }
 div.one { background-position: -40px 0px; }
