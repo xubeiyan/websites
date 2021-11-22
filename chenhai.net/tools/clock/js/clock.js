@@ -1,6 +1,6 @@
 var canvas = document.getElementById('canvas'),
 	context = canvas.getContext('2d'),
-	FONT_HEIGHT = 15,
+	FONT_HEIGHT = 20,
 	MARGIN = 35,
 	HAND_TRUNCATION = canvas.width/25,
 	HOUR_HAND_TRUNCATION = canvas.width/10,
@@ -9,13 +9,14 @@ var canvas = document.getElementById('canvas'),
 	HAND_RADIUS = RADIUS + NUMERAL_SPACING;
 
 //Function
-
+// 画出钟圈
 function drawCircle() {
 	context.beginPath();
 	context.arc(canvas.width / 2, canvas.height / 2, RADIUS, 0, Math.PI * 2, true);
 	context.stroke();
 }
 
+// 画出数字
 function drawNumerals() {
 	var numerals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
 		angle = 0,
@@ -33,12 +34,14 @@ function drawNumerals() {
 	});
 }
 
+// 画出钟的中心
 function drawCenter() {
 	context.beginPath();
 	context.arc(canvas.width / 2, canvas.height / 2, 5, 0, Math.PI*2, true);
 	context.fill();
 }
 
+// 画出针
 function drawHand(loc, isHour) {
 	var angle = (Math.PI*2) * (loc/60) - Math.PI/2,
 		handRadius = isHour ? RADIUS - HAND_TRUNCATION - HOUR_HAND_TRUNCATION : RADIUS - HAND_TRUNCATION;
@@ -49,6 +52,7 @@ function drawHand(loc, isHour) {
 	context.stroke();
 }
 
+// 画出三根针
 function drawHands() {
 	var date = new Date,
 		hour = date.getHours();
@@ -60,6 +64,7 @@ function drawHands() {
 	drawHand(date.getSeconds(), false, 0.2);
 }
 
+// 画出钟表
 function drawClock() {
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	
@@ -67,9 +72,10 @@ function drawClock() {
 	drawCenter();
 	drawHands();
 	drawNumerals();
+
+	window.requestAnimationFrame(drawClock);
 }
 
 //Initialization
-
 context.font = FONT_HEIGHT + 'px Arial';
-loop = setInterval(drawClock, 1000);
+drawClock();
