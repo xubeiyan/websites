@@ -14,8 +14,12 @@ div#mine {
 	background-color: #EEE;
 }
 
+div#stats {
+	margin: 5px 0;
+}
+
 div#control.hide {
-	display: none;
+	opacity: 0;
 }
 
 div.pic { 
