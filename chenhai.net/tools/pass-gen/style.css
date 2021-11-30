@@ -1,0 +1,139 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: var(--page-background-color);
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+:root {
+    --text-color: black;
+    --password-area-color: #E2C2B9;
+    --page-background-color: #D3E4CD;
+    --container-background-color: #F2DDC1;
+    --button-border-radius: 5px;
+    --button-color: snow;
+    --button-hover-color: seashell;
+    --button-active-color: silver;
+}
+
+.container {
+    background-color: var(--container-background-color);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .5);
+    border-radius: 10px;
+}
+
+.header {
+    padding: 1rem 2rem;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+}
+
+.header #password-text {
+    font-family: '微软雅黑', 'Courier New', Courier, monospace;
+    background-color: var(--password-area-color);
+    color: var(--text-color);
+    padding: 0.1rem 0.5rem;
+    margin-right: 1rem;
+    font-size: 1rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 400px;
+}
+
+button {
+    background-color: var(--button-color);
+}
+button:hover {
+    background-color: var(--button-hover-color);
+}
+button:active {
+    background-color: var(--button-active-color);
+}
+
+
+.header #copy-button {
+    position: relative;
+    border: none;
+    border-radius: var(--button-border-radius);
+    cursor: pointer;
+}
+
+.header #copy-button::before,
+.header #copy-button::after {
+    --scale: 0;
+    --arrow-size: 5px;
+    --tooltip-color: white;
+    position: absolute;
+    top: -.25rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(var(--translate-y, 0)) scale(var(--scale));
+    transform-origin: bottom center;
+    
+}
+
+.header #copy-button::before {
+    --translate-y: calc(-100% - var(--arrow-size));
+
+    content: attr(data-tooltip);
+    color: black;
+    padding: .5rem;
+    border-radius: .3rem;
+    text-align: center;
+    width: max-content;
+    max-width: 200%;
+    background: var(--tooltip-color);
+}
+
+.header #copy-button::after {
+    --translate-y: calc(-1 * var(--arrow-size));
+    content: '';
+    border: var(--arrow-size) solid transparent;
+    border-top-color: var(--tooltip-color);
+    transform-origin: top center;
+}
+
+.header #copy-button:hover::before,
+.header #copy-button:hover::after {
+    --scale: 1;
+}
+
+.body {
+    padding: 1rem 2rem;
+    padding-top: 0;
+    position: relative;
+}
+
+.body .option-text {
+    display: inline-block;
+    width: 7rem;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.body .control-area {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.body #pw-length-text {
+    width: 3rem;
+}
+
+.body .generate {
+    position: absolute;
+    top: 0;
+    right: 2rem;
+    width: 6rem;
+    height: calc(100% - 1rem);
+    border: none;
+    border-radius: var(--button-border-radius);
+}

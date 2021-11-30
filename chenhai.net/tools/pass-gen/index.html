@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>密码生成器</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <textarea id="password-text"></textarea>
+            <button id="copy-button" data-tooltip="点击复制密码">复制密码</button>
+        </div>
+        <div class="body">
+            <div class="control-area">
+                <label class="option-text" for="len">密码长度</label>
+                <input type="range" min="1" max="50" value="10" name="" id="pw-length-range" />
+                <input type="number" min="1" max="50" value="10" name="" id="pw-length-text" />
+            </div>
+            <div class="control-area">
+                <label class="option-text" for="upper">包含大写字母</label>
+                <input type="checkbox" id="includeUpper"/>
+            </div>
+            <div class="control-area">
+                <label class="option-text" for="lower">包含小写字母</label>
+                <input type="checkbox" id="includeLower" />
+            </div>
+            <div class="control-area">
+                <label class="option-text" for="number">包含数字</label>
+                <input type="checkbox" id="includeNumber" />
+            </div>
+            <div class="control-area">
+                <label class="option-text" for="symbol">包含符号</label>
+                <input type="checkbox" id="includeSymbol" />
+            </div>
+            <button class="generate" id="gen-button">生成密码</button>
+        </div>
+    </div>
+</body>
+</html>
