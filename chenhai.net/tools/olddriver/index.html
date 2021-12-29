@@ -1,29 +1,54 @@
 <html>
+
 <head>
-<title>老司机发车助手 网页版</title>
-<link rel="icon" type="image/icon" href="logo.png" />
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>老司机发车助手 网页版</title>
+	<link rel="icon" type="image/icon" href="logo.png" />
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" href="style.css">
+	<script type="text/javascript" defer src="js/driver.js"></script>
 </head>
-<body style="font-family:微软雅黑">
-<div style="margin-left:auto; margin-right:auto; width:400px">
-<h4 style="text-align:center">老司机发车助手 网页版</h4>
-<span>发车方式</span>
-<select id="drivemethod">
-	<option value="morse" selected="selected">莫尔斯电码</option>
-	<option value="ascii">ASCII码</option>
-	<option value="base64">base64</option>
-	<option value="story">故事会</option>
-</select>
-<span>发车选项</span>
-<select id="driveoption">
-</select>
-<div id="help" title="莫尔斯电码方式&#10;无法区分大小写, 大写会报错&#10;ASCII码方式&#10;空格可能会转换出错" style="float:right">?</div>
-<textarea id="carcontent" style="width:400px; height:200px" placeholder="输入你要发的车"></textarea>
-<input id="driveacar" type="button" style="width:200px" value="我要发车" title="发车有危险，请谨慎发车，小心车祸"/><input id="takeacar" type="button" style="width:200px" value="我要上车" title="小心坐到黑车被发配煤窑挖煤"/>
-<textarea id="carlike" style="width:400px; height:200px" placeholder="输入你要上的车"></textarea>
-<div id="information"></div>
-<div id="copyleft" style="color:#FFF">By xubeiyan From <a href="https://github.com/xubeiyan/olddriver" style="color:FFF">olddriver</a></div>
-</div>
-<script type="text/javascript" src="js/driver.js"></script>
+
+<body>
+	<main>
+		<h3 class="title">老司机发车助手 网页版</h4>
+		<div class="car-send-option">
+			<label for="drivemethod">发车方式</label>
+			<select id="drivemethod">
+				<option value="morse">莫尔斯电码</option>
+				<option value="ascii">ASCII码</option>
+				<option value="base64" selected="selected">base64</option>
+				<option value="story">故事会</option>
+				<option value="CJK">插入汉字</option>
+			</select>
+			<label for="driveoption">发车选项</label>
+			<select id="driveoption">
+			</select>
+			<span id="help-switch" title="单击显示帮助信息">?</span>
+		</div>
+		<div class="car-send-area">
+			<textarea class="car-content" id="carcontent" placeholder="输入你要发的车..."></textarea>
+			<div class="drive-take-button">
+				<input id="driveacar" type="button" value="我要发车=>" title="发车有危险，请谨慎发车，小心车祸" />
+				<input id="takeacar" type="button" value="<=我要上车" title="小心坐到黑车被发配煤窑挖煤" />
+				<input id="clear-button" type="button" value="清空内容">
+			</div>
+			<textarea class="car-content" id="carlike" placeholder="输入你要上的车..."></textarea>
+		</div>
+		<div class="copyleft">
+			<div id="information">仅供学习使用</div>
+			<div id="author">By xubeiyan From <a href="https://github.com/xubeiyan/olddriver">olddriver</a></div>
+		</div>
+		<div id="help-content" class="hide">
+			<ul>
+				<li>莫尔斯码只支持A-Za-z0-9</li>
+				<li>ASCII码只支持A-Za-z0-9</li>
+				<li>base64只支持A-Za-z0-9</li>
+				<li>故事会只能加密（根本算不上加密...）</li>
+				<li>插入汉字只能适用于不带汉字的字符的加密（这算加密吗？）</li>
+			</ul>
+		</div>
+	</main>
+
 </body>
+
 </html>

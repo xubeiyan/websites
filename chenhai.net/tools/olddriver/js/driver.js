@@ -1,14 +1,33 @@
-var driveMethod = document.getElementById("drivemethod"),
+const driveMethod = document.getElementById("drivemethod"),
 	driveACar = document.getElementById("driveacar"),
 	takeACar = document.getElementById("takeacar"),
-	carContent = document.getElementById("carcontent"),
-	carLike = document.getElementById("carlike"),
+	
 	info = document.getElementById("information"),
-	driveOption = document.getElementById("driveoption"),
-	coding = "morse",
+	driveOption = document.getElementById("driveoption");
+
+var	coding = "morse",
 	split = " ";
 
-// 改变编码	
+// 帮助文字的显示
+const helpContent = document.querySelector("#help-content");
+const helpSwitch = document.querySelector('#help-switch');
+
+helpSwitch.addEventListener('click', (e) => {
+	helpContent.classList.toggle('hide');
+});
+
+
+// 清空内容
+const carContent =  document.getElementById("carcontent");
+const carLikeContent = document.getElementById("carlike");
+const resetButton = document.querySelector('#clear-button');
+
+resetButton.addEventListener('click', () => {
+	carContent.value = '';
+	carLikeContent.value = '';
+});
+
+// 改变编码方式	
 driveMethod.onchange = function () {
 	coding = driveMethod.value;
 	if (coding == "morse") {
@@ -38,29 +57,29 @@ driveACar.onclick = function () {
 		return;
 	}
 	if (coding == "morse") {
-		carLike.value = morse(carContent.value, "encode", split);
+		carLikeContent.value = morse(carContent.value, "encode", split);
 	} else if (coding == "ascii") {
-		carLike.value = ascii(carContent.value, "encode", split);
+		carLikeContent.value = ascii(carContent.value, "encode", split);
 	} else if (coding == "story") {
-		carLike.value = story(carContent.value);
+		carLikeContent.value = story(carContent.value);
 	} else if (coding == "base64") {
-		carLike.value = base64(carContent.value, "encode");
+		carLikeContent.value = base64(carContent.value, "encode");
 	} else {
-		carLike.value = "这个车太超前了，不敢飙车";
+		carLikeContent.value = "这个车太超前了，不敢飙车";
 	}
 }
 
 // 上车
 takeACar.onclick = function () {
-	if (carLike.value == "") {
+	if (carLikeContent.value == "") {
 		return;
 	}
 	if (coding == "morse") {
-		carContent.value = morse(carLike.value, "decode", split);
+		carContent.value = morse(carLikeContent.value, "decode", split);
 	} else if (coding == "ascii") {
-		carContent.value = ascii(carLike.value, "decode", split);
+		carContent.value = ascii(carLikeContent.value, "decode", split);
 	} else if (coding == "base64") {
-		carContent.value = base64(carLike.value, "decode");
+		carContent.value = base64(carLikeContent.value, "decode");
 	} else if (coding == "story") {
 		carContent.value = "正常人都能看出来的就不用劳烦了吧";
 	} else {
