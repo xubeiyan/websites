@@ -49,6 +49,19 @@ textarea.car-content {
     width: 100%;
 }
 
+.message {
+    padding: 0.5rem 1rem;
+    color: white;
+}
+
+.message.ok {
+    background-color: lightgreen;
+}
+
+.message.error {
+    background-color: crimson;
+}
+
 .copyleft {
     --bg-color: aliceblue;
     display: flex;

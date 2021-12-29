@@ -1,12 +1,31 @@
 const driveMethod = document.getElementById("drivemethod"),
 	driveACar = document.getElementById("driveacar"),
 	takeACar = document.getElementById("takeacar"),
-	
-	info = document.getElementById("information"),
 	driveOption = document.getElementById("driveoption");
 
 var	coding = "morse",
 	split = " ";
+
+const convertOKMessage = "看起来转换成功了...";
+const convertPartFailMessage = "疑似有未解析成功的字符";
+const base64DecodeFailMessage = '当前base64貌似有问题';
+// 提示信息
+const info = document.querySelectorAll(".message")[0];
+
+const errorMessage = (text) => {
+	info.classList.add('error');
+	info.innerText = text;
+};
+
+const okMessage = (text) => {
+	info.classList.add('ok');
+	info.innerText = text;
+};
+
+const clearMessage = () => {
+	info.classList.remove('ok', 'error')
+	info.innerText = '';
+};
 
 // 帮助文字的显示
 const helpContent = document.querySelector("#help-content");
@@ -25,6 +44,7 @@ const resetButton = document.querySelector('#clear-button');
 resetButton.addEventListener('click', () => {
 	carContent.value = '';
 	carLikeContent.value = '';
+	clearMessage();
 });
 
 // 改变编码方式	
@@ -41,6 +61,37 @@ driveMethod.onchange = function () {
 	}
 }
 
+// 插入CJK字符
+
+const insertCJKChar = (from) => {
+	const toInsertCJKChar = ['请', '删', '去', '这', '些', '字符'];
+	let charIndex = 0;
+	let to = '';
+	const INSERT_CHANCE = 0.8;
+	
+	Array.from(from).forEach(element => {
+		let addChar = '';
+		if (Math.random() > INSERT_CHANCE) {
+			addChar = toInsertCJKChar[charIndex];
+			charIndex = (charIndex + 1) % toInsertCJKChar.length;
+		}
+		to += element + addChar;
+		
+	});
+	okMessage(convertOKMessage);
+	return to;
+}
+
+
+// 删去CJK字符（可以删去所有CKJ字符，[\u2E80-\u2FD5\u3190-\u319f\u3400-\u4DBF\u4E00-\u9FCC\uF900-\uFAAD]）
+
+const deleteCJKChar = (from) => {
+	const regexp = /[\u2E80-\u2FD5\u3190-\u319f\u3400-\u4DBF\u4E00-\u9FCC\uF900-\uFAAD]/g;
+	let to = from.replaceAll(regexp, '');
+	okMessage(convertOKMessage);
+	return to;
+}
+
 driveOption.onchange = function () {
 	if (driveOption.value == "slash") {
 		split = "/";
@@ -53,38 +104,52 @@ driveMethod.onchange();
 
 // 发车
 driveACar.onclick = function () {
-	if (carContent.value == "") {
+	clearMessage();
+	let from = carContent.value;
+	let to = '';
+
+	if (from == "") {
 		return;
 	}
 	if (coding == "morse") {
-		carLikeContent.value = morse(carContent.value, "encode", split);
+		to = morse(from, "encode", split);
 	} else if (coding == "ascii") {
-		carLikeContent.value = ascii(carContent.value, "encode", split);
+		to = ascii(from, "encode", split);
 	} else if (coding == "story") {
-		carLikeContent.value = story(carContent.value);
+		to = story(from);
 	} else if (coding == "base64") {
-		carLikeContent.value = base64(carContent.value, "encode");
+		to = base64(from, "encode");
+	} else if (coding == 'CJK') {
+		to = insertCJKChar(from);
 	} else {
-		carLikeContent.value = "这个车太超前了，不敢飙车";
+		to = "这个车太超前了，不敢飙车";
 	}
+	carLikeContent.value = to;
 }
 
 // 上车
 takeACar.onclick = function () {
-	if (carLikeContent.value == "") {
+	clearMessage();
+	let from = carLikeContent.value;
+	let to = '';
+
+	if (from == "") {
 		return;
 	}
 	if (coding == "morse") {
-		carContent.value = morse(carLikeContent.value, "decode", split);
+		to = morse(from, "decode", split);
 	} else if (coding == "ascii") {
-		carContent.value = ascii(carLikeContent.value, "decode", split);
+		to = ascii(from, "decode", split);
 	} else if (coding == "base64") {
-		carContent.value = base64(carLikeContent.value, "decode");
+		to = base64(from, "decode");
+	} else if (coding == 'CJK') {
+		to = deleteCJKChar(from);
 	} else if (coding == "story") {
-		carContent.value = "正常人都能看出来的就不用劳烦了吧";
+		to = "正常人都能看出来的就不用劳烦了吧";
 	} else {
-		carContent.value = "这个飙车姿势太高了还未掌握";
+		to = "这个飙车姿势太高了还未掌握";
 	}
+	carContent.value = to;
 }
 
 //莫尔斯电码
@@ -118,7 +183,7 @@ function morse(text, method, splitChar) {
 					return morseCode[i];
 				}
 			}
-			info.innerText = "疑似有未解析成功的字符";
+			errorMessage(convertPartFailMessage);
 			return "......";
 		} else if (method == "decode") {
 			for (var i = 0; i < morseCode.length; ++i) {
@@ -181,6 +246,7 @@ function ascii(text, method, splitChar) {
 					return textCode[i];
 				}
 			}
+			errorMessage(convertPartFailMessage);
 			return "Error";
 		}
 	}
@@ -244,10 +310,19 @@ function ascii(text, method, splitChar) {
 
 // base64加解密
 function base64(text, method) {
+	let decodeText = '';
 	if (method == 'encode') {
+		okMessage(convertOKMessage);
 		return btoa(text);
 	} else if (method == 'decode') {
-		return atob(text);
+		try {
+			decodeText = atob(text);
+		} catch (e) {
+			errorMessage(base64DecodeFailMessage);
+			return "error";
+		}
+		okMessage(convertOKMessage);
+		return decodeText;
 	}
 }
 
@@ -260,6 +335,7 @@ function story(text) {
 		length = storyText.length,
 		rand = Math.floor(Math.random() * length),
 		str = storyText[rand].replace('%text%', text);
+	okMessage(convertOKMessage);
 	return str;
 		
 }
