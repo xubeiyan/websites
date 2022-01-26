@@ -148,7 +148,10 @@ function fillTableFromText() {
     }
 
     [...questionTextElement.value].forEach((ele, index) => {
-        questionTableCell[index] = ele;
+        if (ele !== '.') {
+            questionTableCell[index].value = ele;
+            questionTableCell[index].classList.add('modify');
+        }
     });
 
     return flag;
