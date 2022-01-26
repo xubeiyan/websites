@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数独求解工具</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="sudoku.js" defer></script>
+</head>
+<body>
+    <h1>数独求解工具（Sudoku Solver）</h1>
+    <div class="direction">
+        <ol>
+            <li>在下方区域按行填入需要求解的数独数字，空格使用.（dot）代替</li>
+            <li>也可直接在表格区域依次填写数字</li>
+    </div>
+    <textarea name="question-text" class="question-text" placeholder="填入待求解数独"></textarea>
+    <div class="question-table">
+        <div class="vert-line vert-line-1"></div>
+        <div class="vert-line vert-line-2"></div>
+        <div class="horz-line horz-line-1"></div>
+        <div class="horz-line horz-line-2"></div>
+    </div>
+    <div class="message"></div>
+    <div class="control">
+        <button class="solver">求解</button>
+        <button class="clear">清空</button>
+    </div>
+    <footer>
+        <span>作者: xubeiyan </span>
+        <span>源代码: <a href="#">Github</a></span>
+    </footer>
+</body>
+</html>
