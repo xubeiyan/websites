@@ -11,6 +11,7 @@ const START_NUM = 1;
 const END_NUM = 9;
 
 const validTexts = "123456789.";
+const validNumbers = "123456789";
 
 for (let i = 1; i <= COL_NUM * ROW_NUM; ++i) {
     let e = document.createElement("input")
@@ -105,6 +106,7 @@ function solve(sudokuArray) {
     }
 }
 
+// 根据结果填写表格
 function fillTable() {
     for (let i = 0; i < 9; ++i) {
         for (let j = 0; j < 9; ++j) {
@@ -114,38 +116,48 @@ function fillTable() {
     }
 }
 
+// 根据表格填写sudokuArray
 function fillSudokuArray() {
     for (let i = 0; i < questionTableCell.length; ++i) {
         let row = Math.floor(i / 9);
         let col = i % 9;
         let value = 0;
+        
         if (questionTableCell[i].value !== '') {
+            if (!(validNumbers.includes(questionTableCell[i].value))) {
+                errorMessage("填入数据中有不属于1~9的字符");
+                return false;
+            }
             value = parseInt(questionTableCell[i].value);
             if (checkValue(sudokuArray, row, col, value)) {
                 sudokuArray[row][col] = value;
             } else {
+                errorMessage("填入数据有误，无法求解");
                 return false;
             }
         }
+        
     }
     return true;
 }
 
 function fillTableFromText() {
     let flag = true;
-    
+    if (questionTextElement.value.length !== COL_NUM * ROW_NUM) {
+        errorMessage(`填入数据长度不为${COL_NUM * ROW_NUM}，` +
+        `当前为${questionTextElement.value.length}`);
+        flag = false;
+        solveButton.disabled = true;
+        return flag;
+    }
+
     [...questionTextElement.value].forEach(ele => {
         if (!validTexts.includes(ele)) {
-            messageArea.innerText = "填入数据中有不属于1~9和.的字符";
+            errorMessage("填入数据中有不属于1~9和.的字符");
             flag = false;
+            return flag;
         }
     });
-
-    if (questionTextElement.value.length !== COL_NUM * ROW_NUM) {
-        messageArea.innerText = `填入数据长度不为${COL_NUM * ROW_NUM}，
-            当前为${questionTextElement.value.length}`;
-        flag = false;
-    }
 
     [...questionTextElement.value].forEach((ele, index) => {
         if (ele !== '.') {
@@ -165,12 +177,27 @@ function fillTextFromTable() {
     questionTextElement.value = str;
 }
 
+function errorMessage(text) {
+    messageArea.classList.add('error');
+    messageArea.innerText = text;
+}
+
+function succeedMessage(text) {
+    messageArea.classList.add('succeed');
+    messageArea.innerText = text;
+}
+
+function clearMesssage() {
+    messageArea.classList.remove('succeed', 'error');
+    messageArea.innerText = '';
+}
+
 solveButton.addEventListener('click', () => {
     if (questionTextElement.value.length !=0 && !fillTableFromText()) {
         return;
     }
     if (!fillSudokuArray()) {
-        messageArea.innerText = "填入数据有误，请检查后再试";
+        solveButton.disabled = true;
         return;
     }
     
@@ -178,6 +205,7 @@ solveButton.addEventListener('click', () => {
     solveButton.disabled = true;
     fillTable();
     fillTextFromTable();
+    succeedMessage('已求出结果');
 });
 
 clearButton.addEventListener('click', () => {
@@ -187,7 +215,7 @@ clearButton.addEventListener('click', () => {
     }
     solveButton.disabled = false;
     questionTextElement.value = '';
-    messageArea.innerText = '';
+    clearMesssage();
     sudokuArray = [
         [0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0],
@@ -205,4 +233,4 @@ questionTableCell.forEach(cell => {
     cell.addEventListener('change', (e) => {
         e.target.classList.add('modify');
     })
-})
+});

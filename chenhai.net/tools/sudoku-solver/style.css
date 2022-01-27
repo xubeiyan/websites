@@ -89,6 +89,24 @@ body {
     right: calc(3*var(--cel-size) + 2px);
 }
 
+.message.error {
+    border: 1px solid crimson;
+    border-radius: 5px;
+    padding: 0.5rem 2rem;
+    margin-bottom: 1rem;
+    background-color: #f7e0ed;
+    color: black;
+}
+
+.message.succeed {
+    border: 1px solid rgb(0, 146, 85);
+    border-radius: 5px;
+    padding: 0.5rem 2rem;
+    margin-bottom: 1rem;
+    background-color: #d9ffec;
+    color: black;
+}
+
 footer {
     width: 300px;
     display: flex;
