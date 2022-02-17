@@ -52,13 +52,17 @@ function drawHand(loc, isHour, width, color="#000") {
 	var angle = (Math.PI*2) * (loc/60) - Math.PI/2,
 		handRadius = isHour ? RADIUS - HAND_TRUNCATION - HOUR_HAND_TRUNCATION : RADIUS - HAND_TRUNCATION;
 	
+	context.beginPath();
 	context.save();
-	context.moveTo(canvas.width/2, canvas.height/2);
+	context.lineCap = "round";
 	context.lineWidth = width;
 	context.fillStyle = color;
 	context.strokeStyle = color;
+
+	context.moveTo(canvas.width/2, canvas.height/2);
 	context.lineTo(canvas.width/2 + Math.cos(angle) * handRadius, 
 		canvas.height/2 + Math.sin(angle) * handRadius);
+	
 	context.stroke();
 	context.restore();
 }
@@ -70,8 +74,8 @@ function drawHands() {
 	
 	hour = hour > 12 ? hour - 12 : hour;
 	
-	drawHand(date.getMinutes(), false, 6, 'black');
-	drawHand(hour * 5 + (date.getMinutes()/60)*5, true, 8, 'black');
+	drawHand(date.getMinutes(), false, 3, 'black');
+	drawHand(hour * 5 + (date.getMinutes()/60)*5, true, 5, 'black');
 	drawHand(date.getSeconds(), false, 1, 'red');
 }
 
@@ -80,9 +84,9 @@ function drawClock() {
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	
 	drawCircle();
-	drawCenter();
-	drawHands();
 	drawNumerals();
+	drawHands();
+	drawCenter();
 
 	window.requestAnimationFrame(drawClock);
 }
