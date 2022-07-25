@@ -26,7 +26,7 @@
             </div>
             <div class="control-area">
                 <label class="option-text" for="lower">包含小写字母</label>
-                <input type="checkbox" id="includeLower" />
+                <input type="checkbox" id="includeLower" checked/>
             </div>
             <div class="control-area">
                 <label class="option-text" for="number">包含数字</label>
@@ -37,6 +37,15 @@
                 <input type="checkbox" id="includeSymbol" />
             </div>
             <button class="generate" id="gen-button">生成密码</button>
+        </div>
+    </div>
+    <div class="history-container">
+        <div class="histroy-title">
+            <span>历史记录</span>
+            <button id="clearAllGeneratedPass">清除历史</button>
+        </div>
+        <div class="history-content" id="generatedPass">
+
         </div>
     </div>
 </body>
