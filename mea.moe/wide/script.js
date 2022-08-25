@@ -6,6 +6,7 @@
 
 const canvas = document.getElementById('stage');
 const context = canvas.getContext('2d');
+const loadingSprite = document.getElementById('loading-sprite');
 // 输出日志
 let logLevel = 'info'; // 有info, warn, none三个级别
 let log = function (type, content) {
@@ -79,6 +80,9 @@ const loadImage = () => {
 			loadedImage.push(newimg);
 			// 如果有2张图片加载成功了且绘制状态为loading则开始绘制
 			if (loadedImage.length > 1 && status == 'loading') {
+				// 隐去loading画面
+				loadingSprite.classList.add('hide');
+				// 开始绘制
 				draw(0);
 				status = 'drawing';
 				log('STATUS', `to ${status}`);

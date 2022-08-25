@@ -23,6 +23,35 @@ canvas {
 	height: 2160px;
 }
 
+#loading-sprite {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	opacity: 1;
+	transition: opacity 500ms linear;
+	animation: rotate 5s infinite;
+}
+
+@keyframes rotate {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+#loading-sprite.hide {
+	opacity: 0;
+}
+
+#loading-sprite > .sprite {
+	width: 15em;
+}
+
 .motto {
 	position: absolute;
 	font-size: large;
