@@ -1,6 +1,21 @@
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+
+@font-face {
+    font-family: 'Noto Sans JP';
+    src: url('../font/NotoSansJP-Regular.woff2') format('woff2');
+}
+
 body {
 	margin: 0px;
 	overflow: hidden;
+}
+
+.container {
+	width: 100vw;
+	height: 100vh;
+	position: relative;
 }
 
 canvas {
@@ -8,12 +23,21 @@ canvas {
 	height: 2160px;
 }
 
-div.motto {
-	margin-left: 3em;
-	margin-bottom: 0.5em;
-	font-size: x-large;
+.motto {
+	position: absolute;
+	font-size: large;
 	bottom: 0;
 	left: 0;
-	position: absolute;
-	text-shadow: 0 0 10px #FFF;
+	right: 0;
+	z-index: 10;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.motto>.text {
+	font-family: 'Noto Sans JP';
+	text-shadow: 0 0 5px white;
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: .5em;
+	padding: .5em 1.5em;
 }
