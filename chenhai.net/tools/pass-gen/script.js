@@ -1,118 +1,150 @@
-const copybutton = document.querySelector('#copy-button');
-const passwordText = document.querySelector('#password-text');
-const pwLengthRange = document.querySelector('#pw-length-range');
-const pwLengthText = document.querySelector('#pw-length-text');
-const generateButton = document.querySelector('#gen-button');
-const includeLowers = document.querySelector('#includeLower');
-const includeUppers = document.querySelector('#includeUpper');
-const includeNumbers = document.querySelector('#includeNumber');
-const includeSymbols = document.querySelector('#includeSymbol');
-const generatedPassText = document.querySelector('#generatedPass');
-const clearButton = document.querySelector('#clearAllGeneratedPass');
-
-let passRecordsObj = [];
-
-const copyButtonTooltip = {
-    'copied': '密码已复制',
-    'tocopy': '点击复制密码',
-};
-
-const upperLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const lowerLetters = "abcdefghijklmnopqrstuvwxyz";
+// 需要生成的字符集
+const alphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 const numbers = '0123456789';
-const symbols = '!@#$%^&*()_+-';
+const symbols = '!@#$%^&*()-_+=[]{}<>,.?~'
 
-copybutton.addEventListener('click', () => {
-    if (passwordText.value == '') {
-        generateButton.click();
-    }
-    passwordText.select();
-    copybutton.dataset.tooltip = copyButtonTooltip['copied'];
-    navigator.clipboard.writeText(passwordText.value);
-});
-
-pwLengthRange.addEventListener('change', (e) => {
-    pwLengthText.value = e.target.value;
-});
-
-pwLengthText.addEventListener('change', (e) => {
-    pwLengthRange.value = e.target.value;
-});
-
-clearButton.addEventListener('click', () => {
-    window.localStorage.clear();
-    passRecordsObj = [];
-    updateGeneratedPass();
-})
-
-generateButton.addEventListener('click', () => {
-    copybutton.dataset.tooltip = copyButtonTooltip['tocopy'];
-    const passLength = pwLengthRange.value;
-    let pass = generatePass(passLength, {
-        includeLower: includeLowers.checked,
-        includeUpper: includeUppers.checked,
-        includeNumber: includeNumbers.checked,
-        includeSymbols: includeSymbols.checked,
+// 生成密码区域
+const generated_pass_area = document.querySelector('#generated-pass');
+// 填充生成密码区域
+const fill_generated_pass_area = (value) => {
+    generated_pass_area.replaceChildren();
+    [...value].forEach(one => {
+        let span = document.createElement('span');
+        if (numbers.includes(one)) {
+            span.classList.add('number');
+        } else if (symbols.includes(one)) {
+            span.classList.add('symbol');
+        }
+        span.textContent = one;
+        generated_pass_area.append(span);
     });
-    passwordText.value = pass;
-    passRecordsObj.push({
-        time: new Date().toLocaleString(),
-        text: pass,
-    });
-    setLocalGeneratedPassRecord();
-    updateGeneratedPass();
+}
+
+
+// 重新生成密码按钮
+const regenerate_button = document.querySelector('#regenerate');
+regenerate_button.addEventListener('click', () => {
+    generate_pass();
 });
 
-const updateGeneratedPass = () => {
-    while (generatedPassText.firstChild) {
-        generatedPassText.removeChild(generatedPassText.firstChild);
+// 密码长度
+const password_length_range = document.querySelector('#password-length-range');
+const password_length_value = document.querySelector('#password-length-value');
+password_length_range.addEventListener('change', e => {
+    let value = e.target.value;
+    password_length_value.innerHTML = value;
+    generate_pass();
+});
+
+// PIN长度
+const pin_length_range = document.querySelector('#pin-length-range');
+const pin_length_value = document.querySelector('#pin-length-value');
+pin_length_range.addEventListener('change', e => {
+    let value = e.target.value;
+    pin_length_value.innerHTML = value;
+    generate_pass();
+});
+
+// 生成密码是否包括数字
+let include_number = false;
+// 包含数字checkbox
+const includes_number_checkbox = document.querySelector('#include-number-checkbox');
+includes_number_checkbox.addEventListener('change', e => {
+    include_number = e.target.checked;
+    generate_pass();
+});
+
+// 生成密码是否包括字符
+let include_symbol = false;
+// 包含数字checkbox
+const includes_symbol_checkbox = document.querySelector('#include-symbol-checkbox');
+includes_symbol_checkbox.addEventListener('change', e => {
+    include_symbol = e.target.checked;
+    generate_pass();
+});
+
+// 密码类型
+let pass_type = 'randomPass';
+const password_type_select = document.querySelector('#password-type-select');
+const randomPassOptionEle = document.querySelector('#random-password');
+const pinOptionEle = document.querySelector('#pin');
+password_type_select.addEventListener('change', e => {
+    let value = e.target.value;
+    if (value == 'pin') {
+        randomPassOptionEle.classList.add('hide');
+        pinOptionEle.classList.remove('hide');
+        pass_type = 'pin';
+    } else if (value == 'randomPass') {
+        pinOptionEle.classList.add('hide');
+        randomPassOptionEle.classList.remove('hide');
+        pass_type = 'randomPass';
     }
-    for (let one of passRecordsObj) {
-        let text = `${one.text} 生成于 ${one.time}`;
-        let textNode = document.createTextNode(text);
-        let div = document.createElement('div');
-        div.appendChild(textNode);
-        generatedPassText.appendChild(div);
+    generate_pass();
+});
+
+// 两个图标
+const copy_icon = document.querySelector('#copy-icon');
+const check_icon = document.querySelector('#check-icon');
+// 切换两个图标
+const toggleCopyIcon = (value) => {
+    const copy_pass_button = document.querySelector('#copy-password');
+    if (value == 'copied') {
+        copy_icon.classList.add('hide');
+        check_icon.classList.remove('hide');
+        copy_pass_button.setAttribute('title', 'Password Copied!')
+    } else if (value == 'tocopy') {
+        copy_icon.classList.remove('hide');
+        check_icon.classList.add('hide');
+        copy_pass_button.setAttribute('title', 'Copy Secure Password');
     }
 }
 
-const generatePass = (length, {
-    includeLower, includeUpper, includeNumber, includeSymbols
-}) => {
-    let chars = '';
-    if (includeLower) chars = chars.concat(lowerLetters);
-    if (includeUpper) chars = chars.concat(upperLetters);
-    if (includeNumber) chars = chars.concat(numbers);
-    if (includeSymbols) chars = chars.concat(symbols);
-
-    // 没有选择字符则生成空密码
-    if (chars === '') {
-        return '';
+// 密码值
+let pass_value = '';
+// 生成密码
+const generate_pass = () => {
+    let string_template = '?';
+    let pass_length = 0;
+    if (pass_type == 'randomPass') {
+        string_template = alphabets;
+        if (include_number) {
+            string_template = string_template.concat(numbers);
+        }
+        if (include_symbol) {
+            string_template = string_template.concat(symbols);
+        }
+        pass_length = parseInt(password_length_value.textContent);
+    } else if (pass_type == 'pin') {
+        string_template = numbers;
+        pass_length = parseInt(pin_length_value.textContent);
     }
 
-    const passArray = [];
-    for (let i = 0; i < length; ++i) {
-        const index = Math.floor(Math.random() * chars.length);
-        passArray.push(chars[index]);
+    pass_value = '';
+    for (let i = 0; i < pass_length; ++i) {
+        let random_index = Math.round(Math.random() * (string_template.length - 1))
+        pass_value += string_template[random_index];
     }
-
-    return passArray.join('');
+    // 填充密码区域
+    fill_generated_pass_area(pass_value);
+    // 将复制按钮还原
+    toggleCopyIcon('tocopy');
 }
 
-// 从localStorage中读取已生成的密码
-const getLocalGeneratedPassRecord = () => {
-    let passRecordsStr = window.localStorage.getItem('pass');
-    if (passRecordsStr == null) {
-        return;
+// 复制密码
+const copy_pass_button = document.querySelector('#copy-password');
+copy_pass_button.addEventListener('click', () => {
+    const textArea = document.createElement("textarea");
+    textArea.value = pass_value;
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        toggleCopyIcon('copied');
+    } catch (err) {
+        console.error(err);
     }
+    document.body.removeChild(textArea);
+});
 
-    passRecordsObj = JSON.parse(passRecordsStr);
-    updateGeneratedPass();
-}
-
-const setLocalGeneratedPassRecord = () => {
-    window.localStorage.setItem('pass', JSON.stringify(passRecordsObj));
-}
-
-
-getLocalGeneratedPassRecord();
+generate_pass();
