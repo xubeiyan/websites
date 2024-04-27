@@ -96,10 +96,12 @@ h5 {
     display: flex;
     justify-content: center;
     align-items: center;
+    animation-play-state: paused;
 }
 
 .icon-btn#regenerate:hover {
     animation: rotate-icon 2s infinite linear;
+    animation-play-state: running;
 }
 
 .icon-btn #copy-icon.hide, .icon-btn #check-icon.hide {
