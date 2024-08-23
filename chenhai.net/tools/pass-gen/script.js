@@ -120,10 +120,45 @@ const generate_pass = () => {
     }
 
     pass_value = '';
+    let numberFlag = false;
+    let symbolFlag = false;
+    let replaceOrder = [];
     for (let i = 0; i < pass_length; ++i) {
-        let random_index = Math.round(Math.random() * (string_template.length - 1))
+        let random_index = Math.floor(Math.random() * string_template.length);
+
+        if (include_number && numbers.includes(string_template[random_index])) {
+            numberFlag = true;
+        }
+
+        if (include_symbol && symbols.includes(string_template[random_index])) {
+            symbolFlag = true;
+        }
         pass_value += string_template[random_index];
+        replaceOrder.push(i);
     }
+
+    // 打乱replaceOrder的前两个
+    for (let i = 0; i < 2; ++i) {
+        const random_index = i + Math.floor(Math.random() * (replaceOrder.length - i));
+        const temp = replaceOrder[random_index];
+        replaceOrder[random_index] = replaceOrder[i];
+        replaceOrder[i] = temp;
+    }
+
+    // 如果没有数字,且要求数字，则选择replaceOrder第一个元素位置的值替换
+    if (include_number && !numberFlag) {
+        const index = replaceOrder[0];
+        const number_index = Math.floor(Math.random() * numbers.length);
+        pass_value = `${pass_value.substring(0, index)}${numbers[number_index]}${pass_value.substring(index + 1)}`;
+    }
+
+    // 如果没有符号，且要求符号，则选择replaceOrder第二个元素位置的值替换
+    if (include_symbol && !symbolFlag) {
+        const index = replaceOrder[1];
+        const symbol_index = Math.floor(Math.random() * symbols.length);
+        pass_value = `${pass_value.substring(0, index)}${symbols[symbol_index]}${pass_value.substring(index + 1)}`;
+    }
+
     // 填充密码区域
     fill_generated_pass_area(pass_value);
     // 将复制按钮还原
