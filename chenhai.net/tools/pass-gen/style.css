@@ -96,11 +96,14 @@ h5 {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.icon-btn#regenerate>svg {
+    animation: rotate-icon 2s infinite linear;
     animation-play-state: paused;
 }
 
-.icon-btn#regenerate:hover {
-    animation: rotate-icon 2s infinite linear;
+.icon-btn#regenerate:hover>svg {
     animation-play-state: running;
 }
 
@@ -108,7 +111,50 @@ h5 {
     display: none;
 }
 
+.icon-btn#regenerate, .icon-btn#copy-password {
+    position: relative;
+}
+
+.icon-btn>.btn-tip-wrapper {
+    opacity: 0;
+    position: absolute;
+    top: 100%;
+    margin-top: 1em;
+    transition: opacity 200ms linear;
+    z-index: 10;
+}
+
+.icon-btn:hover>.btn-tip-wrapper {
+    opacity: 1;
+}
+
+.btn-tip-wrapper>.tip-diamond {
+    position: absolute;
+    border: 1em solid transparent;
+    width: 0;
+    height: 0;
+    left: 50%;
+    top: -1.75em;
+    translate: -50% 0;
+    display: block;
+    border-bottom-color: black;
+}
+
+.btn-tip-wrapper>.tip-body {
+    box-shadow: 1px 1px 3px 1px rgb(0 0 0 / 50%);
+    display: block;
+    white-space: nowrap;
+    color: white;
+    padding: .5em 1.5em;
+    border-radius: 3em;
+    background: black;
+}
+
 @keyframes rotate-icon {
+    0% {
+        rotate: 0;
+    }
+
     50% {
         rotate: 180deg;
     }
@@ -221,6 +267,7 @@ h5 {
 
     .generate-options::before {
         background: #334;
-        box-shadow: inset 2px 2px 1px 1px #335;;
+        box-shadow: inset 2px 2px 1px 1px #335;
+        ;
     }
 }
