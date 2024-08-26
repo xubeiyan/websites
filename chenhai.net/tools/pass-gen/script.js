@@ -87,15 +87,15 @@ const copy_icon = document.querySelector('#copy-icon');
 const check_icon = document.querySelector('#check-icon');
 // 切换两个图标
 const toggleCopyIcon = (value) => {
-    const copy_pass_button = document.querySelector('#copy-password');
+    const tipBodyText = document.querySelector('#tip-body-text');
     if (value == 'copied') {
         copy_icon.classList.add('hide');
         check_icon.classList.remove('hide');
-        copy_pass_button.setAttribute('title', 'Password Copied!')
+        tipBodyText.textContent = 'Copied';
     } else if (value == 'tocopy') {
         copy_icon.classList.remove('hide');
         check_icon.classList.add('hide');
-        copy_pass_button.setAttribute('title', 'Copy Secure Password');
+        tipBodyText.textContent = 'Secure Copy Password';
     }
 }
 
