@@ -3,12 +3,29 @@ body {
   margin: 0;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   display: flex;
   flex-direction: column;
   gap: 1em;
   align-items: center;
   padding-top: 5em;
+}
+
+.dark {
+  color: white;
+}
+
+.dark body {
+  background: #333;
+}
+
+.dark textarea {
+  background: #666;
+  color: white;
 }
 
 label {
@@ -21,6 +38,8 @@ label {
 label > textarea {
   min-height: 20em;
   font-size: large;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
 
 button {
@@ -29,10 +48,48 @@ button {
   width: 6em;
   height: 2em;
   font-size: large;
-  border-radius: .5em;
+  border-radius: 0.5em;
   cursor: pointer;
 }
 
 button:hover {
   outline: 1px solid lightblue;
+}
+
+label#darkSwitch {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5em;
+}
+
+label#darkSwitch > div {
+  border-radius: 1em;
+  width: 3.5em;
+  height: 2em;
+  padding: 0.1em;
+  background: #a2d2df;
+}
+
+label#darkSwitch > div > span {
+  display: inline-block;
+  border-radius: 0.9em;
+  width: 1.8em;
+  height: 1.8em;
+  background: #f6efbd;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+
+label#darkSwitch:has(input:checked) > div {
+  background: #92c2cf;
+}
+
+label#darkSwitch:has(input:checked) > div > span {
+  translate: 1.4em;
+  background: #bc7c7c;
+}
+
+label#darkSwitch > input {
+  display: none;
 }
