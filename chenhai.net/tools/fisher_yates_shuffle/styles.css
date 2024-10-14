@@ -1,0 +1,38 @@
+html,
+body {
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  align-items: center;
+  padding-top: 5em;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  width: clamp(50%, 40em, 90%);
+}
+
+label > textarea {
+  min-height: 20em;
+  font-size: large;
+}
+
+button {
+  border: none;
+  background: linear-gradient(to right top, #a2d2df, #f6efbd);
+  width: 6em;
+  height: 2em;
+  font-size: large;
+  border-radius: .5em;
+  cursor: pointer;
+}
+
+button:hover {
+  outline: 1px solid lightblue;
+}
