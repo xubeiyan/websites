@@ -52,8 +52,11 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  outline: 1px solid lightblue;
+button:hover,
+button:focus-within,
+button:focus {
+  outline: 2px solid lightblue;
+  outline-offset: 2px;
 }
 
 label#darkSwitch {
@@ -61,6 +64,8 @@ label#darkSwitch {
   flex-direction: row;
   align-items: center;
   gap: 0.5em;
+  --light-switch-color: white;
+  --dark-switch-color: #333;
 }
 
 label#darkSwitch > div {
@@ -76,7 +81,7 @@ label#darkSwitch > div > span {
   border-radius: 0.9em;
   width: 1.8em;
   height: 1.8em;
-  background: #f6efbd;
+  background: var(--light-switch-color);
   cursor: pointer;
   transition: all 200ms ease-in-out;
 }
@@ -87,7 +92,7 @@ label#darkSwitch:has(input:checked) > div {
 
 label#darkSwitch:has(input:checked) > div > span {
   translate: 1.4em;
-  background: #bc7c7c;
+  background: var(--dark-switch-color);
 }
 
 label#darkSwitch > input {
