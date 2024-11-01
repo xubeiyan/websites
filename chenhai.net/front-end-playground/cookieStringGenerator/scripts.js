@@ -37,75 +37,72 @@ output.setAttribute("id", "output");
 const currentCookie = document.createElement("span");
 currentCookie.setAttribute("class", "cookies");
 const hint = document.createElement("span");
-const text = document.createTextNode("6个字母都一样的饼干:");
+const text = document.createTextNode("6个字母都一样的字符串:");
 hint.appendChild(text);
 output.appendChild(currentCookie);
 output.appendChild(hint);
 root.appendChild(output);
 
-// 亮的位置偏移
-let offsetIndexArray = [0, 0, 0, 0, 0, 0];
-const offsetPlusOne = () => {
-  const len = template[0].length;
-  let value = offsetIndexArray[0];
-  for (let i = 1; i < offsetIndexArray.length; ++i) {
-    value = value + offsetIndexArray[i] * len;
-  }
-  value += 1;
-  for (let i = 0; i < offsetIndexArray.length; ++i) {
-    offsetIndexArray[i] = value % len;
-    value = Math.floor(value / len);
-  }
-};
-
-const offsetNext = () => {
-  const len = template[0].length;
-  for (let i = 0; i < offsetIndexArray.length; ++i) {
-    offsetIndexArray[i] = (offsetIndexArray[i] + 1) % len;
-  }
-};
-// 循环函数
-const nextTick = (startIndex = 0) => {
-  const pList = content.children;
-  for (let i = 0; i < pList.length; ++i) {
-    const spanList = pList[i].children;
-    const offset = offsetIndexArray[i] % spanList.length;
-    const span = spanList[offset];
-    span.classList.remove("light");
-  }
-
-  if (startIndex != 0 && startIndex % template[0].length == 0) {
-    offsetPlusOne();
-  }
-
-  offsetNext();
-
-  let cookies = "";
-  for (let i = 0; i < pList.length; ++i) {
-    const spanList = pList[i].children;
-    const offset = offsetIndexArray[i] % spanList.length;
-    const span = spanList[offset];
-    cookies += span.textContent;
-    span.classList.add("light");
-  }
-
-  currentCookie.textContent = cookies;
+// 判断六个字符是否都是一样
+const judgeStringAllSame = (s) => {
+  if (s.length != 6) return false;
   if (
-    cookies[0] == cookies[1] &&
-    cookies[1] == cookies[2] &&
-    cookies[2] == cookies[3] &&
-    cookies[3] == cookies[4] &&
-    cookies[4] == cookies[5]
+    s[0] == s[1] &&
+    s[1] == s[2] &&
+    s[2] == s[3] &&
+    s[3] == s[4] &&
+    s[4] == s[5]
   ) {
+    return true;
+  }
+  return false;
+};
+
+// 起始的位置
+let oldOffsetArray = [0, 43, 44, 55, 19, 51];
+let initStartIndex = 0;
+
+for (let i = 0; i < oldOffsetArray.length; ++i) {
+  initStartIndex += oldOffsetArray[i] * Math.pow(template[0].length, i);
+}
+
+// 循环函数
+const nextTick = (startIndex = initStartIndex) => {
+  const len = template[0].length;
+  const offset = startIndex % len;
+  // 偏移量
+  const offsetArray = [];
+
+  // 根据 startIndex 计算偏移量
+  for (let i = 0, newIndex = startIndex; i < template.length; ++i) {
+    newIndex = Math.floor(newIndex / len);
+    const o = (offset + newIndex) % len;
+    offsetArray.push(o);
+  }
+
+  // 根据oldOffsetArray清除变色效果，根据新的offsetArray添加变色效果
+  let resultStr = "";
+  for (let i = 0; i < content.children.length; ++i) {
+    const spanList = content.children[i].children;
+    spanList[oldOffsetArray[i]].classList.remove("light");
+    spanList[offsetArray[i]].classList.add("light");
+    resultStr += spanList[offsetArray[i]].textContent;
+  }
+
+  currentCookie.textContent = resultStr;
+  if (judgeStringAllSame(resultStr)) {
     const c = document.createElement("span");
     c.setAttribute("class", "cookies");
-    c.appendChild(document.createTextNode(cookies));
+    c.textContent = resultStr;
     output.appendChild(c);
   }
 
+  // 用新的替换老的，准备下次替换
+  oldOffsetArray = offsetArray;
+
   setTimeout(() => {
     nextTick(startIndex + 1);
-  }, 1);
+  }, 2);
 };
 
 nextTick();

@@ -15,16 +15,20 @@ body {
 }
 
 body {
-  background: lightgray;
+  background: hsl(0, 0%, 20%);
+}
+
+h1,
+span {
+  color: hsl(0, 0%, 90%);
 }
 
 #root > main {
-  background: hsl(0, 70%, 10%);
+  background: hsl(0, 20%, 10%);
   padding: 2em;
   padding-top: 1em;
   padding-bottom: 1em;
   border-radius: 1em;
-  color: hsl(0, 0%, 80%);
 }
 
 p {
@@ -36,10 +40,11 @@ p > span {
   font-family: "Consolas", monospace;
   font-size: x-large;
   padding-left: 0.125em;
+  color: hsl(0, 10%, 30%);
 }
 
 p > span.light {
-  color: hsl(10, 70%, 50%);
+  color: hsl(120, 100%, 50%);
 }
 
 #output {
