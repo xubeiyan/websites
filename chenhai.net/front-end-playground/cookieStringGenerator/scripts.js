@@ -59,6 +59,7 @@ const judgeStringAllSame = (s) => {
 };
 
 // 起始的位置
+// 第一个数字是最后一行的起始位置，第二个数字是第一行基于最后一行起始位置的位置偏移，以此类推
 let oldOffsetArray = [0, 43, 44, 55, 19, 51];
 let initStartIndex = 0;
 
@@ -102,7 +103,7 @@ const nextTick = (startIndex = initStartIndex) => {
 
   setTimeout(() => {
     nextTick(startIndex + 1);
-  }, 2);
+  }, 100);
 };
 
 nextTick();
