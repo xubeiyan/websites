@@ -7,13 +7,25 @@
   --height: 10em;
   --spin-size: 8em;
   --trans-time: 400ms;
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  height: 100svh;
+  align-content: center;
 }
 
 .switch-container {
   width: var(--width);
   height: var(--height);
-  display: inline-block;
+  display: block;
   position: relative;
+  margin: 0 auto;
 }
 
 .switch-container>input {
@@ -29,6 +41,7 @@
   transition: all ease-in-out var(--trans-time);
   border-radius: calc(var(--height) / 2);
   box-shadow: inset 4px 4px 5px 1px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 
 .switch-slider>.spin {
