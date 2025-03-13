@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html>
+<!-- 源代码载于《Javascript高效图形编程》，作了少许修改 -->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>太空侵略者</title>
+<script type="text/javascript"
+	src="js/jquery-1.10.1.js">
+</script>
+<style type="text/css">
+
+#draw-target {
+	width:480px;
+	height:384px;
+	background-color:#333;
+	position:relative;
+	color:#FFF;
+	font-size:16px;
+	font-family:"华康少女文字W5(P)","微软雅黑";
+	font-weight:normal;
+	letter-spacing:1px;
+}
+.message {
+	margin-left:auto;
+	margin-right:auto;
+	padding-top:32px;
+	text-align:center;
+}
+#score {
+	position:absolute;
+	top:8px;
+	left:16px;
+}
+#highScore {
+	position:absolute;
+	top:8px;
+	right:16px;
+}
+#lives {
+	margin-left:auto;
+	margin-right:auto;
+	padding-top:8px;
+	text-align:center;
+}
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+	
+		//for ie6
+		try {
+	document.execCommand("BackgroundImageCache", false, true);
+}catch(err) {};
+	// 碰撞判定常量
+var PLAYER = 1,				// 玩家
+	LASER = 2,				// 激光（玩家炮弹）
+	ALIEN = 4,				// 敌人
+	ALIEN_BOMB = 8,			// 敌人炮弹
+	SHIELD = 16,			// 护盾
+	SAUCER = 32,			// 飞碟
+	TOP_OF_SCREEN = 64,		// 屏幕顶
+	// 一些初始坐标常量
+	TANK_Y = 352 - 16,		// 坦克水平坐标
+	SHIELD_Y = TANK_Y - 56,	// 护盾水平坐标
+	SCREEN_WIDTH = 480,		// 屏幕宽
+	SCREEN_HEIGHT = 384,	// 屏幕高	
+	ALIEN_COLUMNS = 11,		// 敌人行数
+	ALIEN_ROWS = 5,			// 敌人列数
+	LASER_VELOCITY = 7,		// 激光速度
+	BOMB_VELOCITY = 1.5,	// 敌人炮弹速度
+	// 全局变量
+	SYS_process,			// 处理函数
+	SYS_collisionManager,	// 碰撞管理
+	SYS_timeInfo,			// 帧数调整
+	SYS_spriteParams = {	
+		width: 32,
+		height: 32,
+		imagesWidth: 256,
+		images: 'img/invaders.png',
+		$drawTarget: $('#draw-target')
+	};
+
+// 处理函数
+var processor = function () {
+	var processList = [],
+		addedItems = [];
+	return {
+		add: function (process) {
+			addedItems.push(process);
+		},
+		process: function () {
+			var newProcessList = [],
+				len = processList.length;
+			for (var i = 0; i < len; i++) {
+				if (!processList[i].removed) {
+					processList[i].move();
+					newProcessList.push(processList[i]);
+				}
+			}
+			processList = newProcessList.concat(addedItems);
+			addedItems = [];
+		}
+	};
+};
+// 碰撞管理函数
+var collisionManager = function () {
+	var listIndex = 0,
+		grid = [],
+		checkListIndex = 0,
+		checkList = {},
+		gridWidth = 15,
+		gridHeight = 12;
+	for (var i = 0; i < gridWidth * gridHeight; i++) {
+		grid.push({});
+	}
+	var getGridList = function (x, y) {
+		var idx = (Math.floor(y / 32) *gridWidth) + Math.floor(x / 32);
+		if (grid[idx] === undefined) {
+			return;
+		}
+		return grid[idx];
+	};
+	return {
+		newCollider: function(colliderFlag, collideeFlags, width, height, callback){
+			var list, indexStr = '' + listIndex++,
+				checkIndex;
+			var colliderObj = {
+				halfWidth: width / 2,
+				halfHeight: height / 2,
+				centerX: 0,
+				centerY: 0,
+				colliderFlag: colliderFlag,
+				collideeFlags: collideeFlags,
+				update: function (x, y) {
+					colliderObj.centerX = x + 16;
+					colliderObj.centerY = y + 32 -colliderObj.halfHeight;
+					if (list) {
+						delete list[indexStr];
+					}
+					list = getGridList(colliderObj.centerX, colliderObj.centerY);
+					if (list) {
+						list[indexStr] = colliderObj;
+					}
+				},
+				remove: function () {
+					if (collideeFlags) {
+						delete checkList[checkIndex];
+					}
+					if (list) { //list can be undefined if item was off-screen
+						delete list[indexStr];
+					}
+				},
+				callback: function () {
+					callback();
+				},
+				checkCollisions: function (offsetX, offsetY) {
+					var list = getGridList(colliderObj.centerX + offsetX,
+						colliderObj.centerY + offsetY);
+					if (!list) {
+						return;
+					}
+					var idx, collideeObj;
+					for (idx in list) {
+						if (list.hasOwnProperty(idx) && 
+							idx !== indexStr &&
+							(colliderObj.collideeFlags & list[idx].colliderFlag)) {
+							collideeObj = list[idx];
+							if (Math.abs(colliderObj.centerX - collideeObj.centerX) > 
+								(colliderObj.halfWidth + collideeObj.halfWidth)) {
+								continue;
+							}
+							if (Math.abs(colliderObj.centerY - collideeObj.centerY) > 
+								(colliderObj.halfHeight + collideeObj.halfHeight)) {
+								continue;
+							}
+							collideeObj.callback(colliderObj.colliderFlag);
+							callback(collideeObj.colliderFlag);
+							return true;
+						}
+					}
+					return false;
+				}
+			};
+			if (collideeFlags) {
+				checkIndex = '' + checkListIndex++;
+				checkList[checkIndex] = colliderObj;
+			}
+			return colliderObj;
+		},
+		checkCollisions: function () {
+			var idx, colliderObj;
+			for (idx in checkList) {
+				if (checkList.hasOwnProperty(idx)) {
+					colliderObj = checkList[idx];
+					for (var y = -32; y <= 32; y += 32) {
+						for (var x = -32; x <= 32; x += 32) {
+							if (colliderObj.checkCollisions(x, y)) {
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	};
+};
+// 精灵函数
+var DHTMLSprite = function (params) {
+	var width = params.width,
+		height = params.height,
+		imagesWidth = params.imagesWidth,
+		$element = params.$drawTarget.append('<div/>').find(':last'),
+		elemStyle = $element[0].style,
+		mathFloor = Math.floor;
+		
+	$element.css({
+		position: 'absolute',
+		left:-9999, // 初始位置要放到DIV之外，不然会有一个奇怪的东西在左上角闪
+		width: width,
+		height: height,
+		backgroundImage: 'url(' + params.images + ')'
+		});
+	var that = {
+		draw: function (x, y) {
+			elemStyle.left = x + 'px';
+			elemStyle.top = y + 'px';
+		},
+		
+		changeImage: function (index) {
+			index *= width;
+			var vOffset = -mathFloor(index / imagesWidth) * height;
+			var hOffset = -index % imagesWidth;
+			elemStyle.backgroundPosition = hOffset + 'px ' + vOffset + 'px';
+		},
+		show: function () {
+			elemStyle.display = 'block';
+		},
+		hide: function () {
+			elemStyle.display = 'none';
+		},
+		destroy: function () {
+			$element.remove();
+		}
+	};
+	
+	return that;
+};
+// 时间管理
+var timeInfo = function (goalFPS) {
+	
+	var oldTime, paused = true,
+		interCount = 0,
+		totalFPS = 0,
+		totalCoeff = 0;
+	return {
+		getInfo: function () {
+			if (paused === true) {
+				paused = false;
+				oldTime = +new Date();
+				return {
+					elapsed: 0,
+					coeff: 0,
+					FPS: 0,
+					averageFPS: 0,
+					averageCoeff: 0
+				};
+			}
+			var newTime = +new Date();
+			var elapsed = newTime - oldTime;
+			oldTime = newTime;
+			var FPS = 1000 / elapsed;
+			interCount++;
+			totalFPS += FPS;
+			var coeff = goalFPS / FPS;
+			totalCoeff += coeff;
+			return {
+				elapsed: elapsed,
+				coeff: goalFPS / FPS,
+				FPS: FPS,
+				averageFPS: totalFPS / interCount,
+				averageCoeff: totalCoeff / interCount
+			};
+		},
+		pause: function () {
+			paused = true;
+		}
+	};
+};
+// 按键函数
+var keys = function () {
+
+	var keyMaps = {
+			'90': 'left',
+			'88': 'right',
+			'77': 'fire'
+		},
+		kInfo = {
+			'left': 0,
+			'right': 0,
+			'fire': 0
+		},
+		key;
+	$(document).bind('keydown keyup', function (event) {
+		key = '' + event.which;
+		if (keyMaps[key] !== undefined) {
+			kInfo[keyMaps[key]] = event.type === 'keydown' ? 1 : 0;
+			return false;
+		}
+	});
+	return kInfo;
+}();	
+// 动画效果
+var animEffect = function (x, y, imageList, timeout) {
+		var imageIndex = 0,
+			that = DHTMLSprite(SYS_spriteParams);
+		setTimeout(function(){
+			that.removed = true;
+			that.destroy();
+		},timeout);
+		that.move = function () {
+			that.changeImage(imageList[imageIndex]);
+			imageIndex++;
+			if (imageIndex === imageList.length) {
+				imageIndex = 0;
+			}
+			that.draw(x, y);
+		};
+	SYS_process.add(that);
+	};
+// 敌人
+var alien = function (x, y, frame, points, hitCallback) {
+	
+	var animFlag = 0,
+		that = DHTMLSprite(SYS_spriteParams),
+		collider, collisionWidth = 16;
+	that.canFire = false;
+	that.remove = function (colliderFlag) {
+		if (colliderFlag & SHIELD) {
+			return;
+		}
+		animEffect(x, y, [8], 250);
+		that.destroy();
+		collider.remove();
+		that.removed = true;
+		hitCallback(points);
+	};
+	if (frame === 2) {
+		collisionWidth = 22;
+	}
+	else if (frame === 4) {
+		collisionWidth = 25;
+	}
+	collider = SYS_collisionManager.newCollider(ALIEN, 0, collisionWidth, 16, that.remove);
+	collider.update(x, y);
+	that.move = function (dx, dy) {
+		that.changeImage(frame + animFlag);
+		animFlag ^= 1;
+		x += dx;
+		y += dy;
+		if (!collider.collideeFlags && y >= SHIELD_Y - 16) {
+			collider.remove();
+			collider = SYS_collisionManager.newCollider(ALIEN, SHIELD, collisionWidth, 16, that.remove);
+		}
+		collider.update(x, y);
+		that.draw(x, y);
+		if ((dx > 0 && x >= SCREEN_WIDTH - 32 - 16) || (dx < 0 && x <= 16)) {
+			return true;
+		}
+		return false;
+	};
+	that.getXY = function () {
+		return {
+			x: x,
+			y: y
+		};
+	};
+	return that;
+};
+// 敌人管理器
+var aliensManager = function (gameCallback, startY) {
+	
+	var aliensList = [],
+		aliensFireList = [],
+		paused = false,
+		moveIndex,
+		dx = 4,
+		dy = 0,
+		images = [0, 2, 2, 4, 4],
+		changeDir = false,
+		waitFire = false,
+		scores = [40, 20, 20, 10, 10],
+		that,
+		hitFunc = function (points) {
+			if (!paused) {
+				that.pauseAliens(150);
+			}
+			gameCallback({
+				message: 'alienKilled',
+				score: points
+			});
+		};
+	for (var y = 0; y < ALIEN_ROWS; y++) {
+		for (var x = 0; x < ALIEN_COLUMNS; x++) {
+			var anAlien = alien((x * 32) + 16, (y * 32) + startY,
+				images[y], scores[y], hitFunc);
+			aliensList.push(anAlien);
+			if (y == ALIEN_ROWS - 1) {
+				aliensList[aliensList.length - 1].canFire = true;
+			}
+		}
+	}
+	moveIndex = aliensList.length - 1;
+	that = {
+		pauseAliens: function (pauseTime) {
+			paused = true;
+			setTimeout(function () {
+				paused = false;
+			}, pauseTime);
+		},
+		move: function () {
+			if (paused) {
+				return;
+			}
+			if (!aliensList.length) {
+				that.removed = true;
+				gameCallback({
+					message: 'allAliensKilled'
+				});
+				return;
+			}
+			var anAlien = aliensList[moveIndex];
+			if (anAlien.removed) {
+				for (var i = aliensList.length - 1; i >= 0; i--) {
+					if (aliensList[i].getXY().x === anAlien.getXY().x &&
+						i !== moveIndex) {
+						if (i < moveIndex) {
+							aliensList[i].canFire = true;
+						}
+						break;
+					}
+				}
+				aliensList.splice(moveIndex, 1);
+				moveIndex--;
+				if (moveIndex === -1) {
+					moveIndex = aliensList.length - 1;
+				}
+				return;
+			}
+			if (anAlien.canFire) {
+				aliensFireList.push(anAlien);
+			}
+			var dx2 = dy ? 0 : dx;
+			if (anAlien.move(dx2, dy)) {
+				changeDir = true;
+			}
+			if (anAlien.getXY().y >= TANK_Y) {
+				gameCallback({
+					message: 'aliensAtBottom'
+				});
+				return;
+			}
+			moveIndex--;
+			if (moveIndex === -1) {
+				moveIndex = aliensList.length - 1;
+				dy = 0;
+				var coeff = SYS_timeInfo.averageCoeff;
+				dx = 4 * (dx < 0 ? -coeff : coeff);
+				if (changeDir === true) {
+					dx = -dx;
+					changeDir = false;
+					dy = 16;
+				}
+				if (!waitFire) {
+					var fireAlien = aliensFireList[Math.floor(Math.random() * 
+						(aliensFireList.length))];
+					var xy = fireAlien.getXY();
+					alienBomb(xy.x, xy.y, function() {
+						waitFire = false;
+							});
+							aliensFireList = [];
+							waitFire = true;
+				}
+			}
+		}
+	};
+	SYS_process.add(that);
+	return that;
+};
+// 激光（玩家炮弹）
+var laser = function (x, y, callback) {
+	
+	var that = DHTMLSprite(SYS_spriteParams);
+	that.remove = function (collideeFlags) {
+		if (collideeFlags & (TOP_OF_SCREEN + SHIELD + ALIEN_BOMB)) {
+			animEffect(x, y, [18], 250, null);
+		}
+		that.destroy();
+		collider.remove();
+		that.removed = true;
+		setTimeout(callback, 200);
+	};
+	var collider = SYS_collisionManager.newCollider(LASER, ALIEN + ALIEN_BOMB +
+		SHIELD + SAUCER, 2, 10, that.remove);
+	that.changeImage(7);
+	that.move = function () {
+		y -= LASER_VELOCITY * SYS_timeInfo.coeff;
+		that.draw(x, y);
+		collider.update(x, y);
+		if (y <= -8) {
+			that.remove(TOP_OF_SCREEN);
+		}
+	};
+	SYS_process.add(that);
+};
+// 敌人炮弹
+var alienBomb = function (x, y, removedCallback) {
+	
+	var that = DHTMLSprite(SYS_spriteParams),
+		collider;
+	that.changeImage(19);
+	that.remove = function () {
+		animEffect(x, y + 8, [18], 250, null);
+		that.destroy();
+		collider.remove();
+		that.removed = true;
+		removedCallback();
+	};
+	collider = SYS_collisionManager.newCollider(ALIEN_BOMB, SHIELD, 6, 12, that.remove);
+	that.move = function () {
+		y += BOMB_VELOCITY * SYS_timeInfo.coeff;
+		that.draw(x, y);
+		collider.update(x, y);
+		if (y >= TANK_Y) {
+			that.remove();
+		}
+	};
+	SYS_process.add(that);
+};
+// 己方坦克（玩家操纵）
+var tank = function (gameCallback) {
+	
+	var x = ((SCREEN_WIDTH / 2) -160),
+		canFire = true,
+		collider,
+		waitFireRelease = true,
+		that = DHTMLSprite(SYS_spriteParams);
+	that.changeImage(6);
+	that.draw(x, TANK_Y);
+	that.move = function () {
+		var dx = keys.left ? -2 : 0;
+		dx = keys.right ? 2 : dx;
+		x += dx * SYS_timeInfo.coeff;
+		if (dx > 0 && x >= (SCREEN_WIDTH / 2) + 168) {
+			x = (SCREEN_WIDTH / 2) + 168;
+		}
+		if (dx < 0 && x <= (SCREEN_WIDTH / 2) - 200) {
+			x = (SCREEN_WIDTH / 2) - 200;
+		}
+		that.draw(x, TANK_Y);
+		collider.update(x, TANK_Y);
+		if (canFire) {
+			if (keys.fire) {
+				if (!waitFireRelease) {
+					laser(x, TANK_Y+8, function(){canFire = true;} );
+					canFire = false;
+					waitFireRelease = true;
+				}
+				else {
+					waitFireRelease = false;
+				}
+			}
+		}
+	};
+	that.hit = function () {
+		collider.remove();
+		that.destroy();
+		that.removed = true;
+		animEffect(x, TANK_Y, [8], 250, null);
+		gameCallback({
+			message: 'playerKilled'
+		});
+	};
+	collider = SYS_collisionManager.newCollider(PLAYER, ALIEN_BOMB,
+		30, 12, that.hit);
+	SYS_process.add(that);
+};
+// 护盾（前面看起来像土堆的东西）
+var Shield = function (x, y) {
+	var shieldBrick = function (x, y, image) {
+		var that = DHTMLSprite(SYS_spriteParams),
+			collider,
+			hit = function () {
+				that.destroy();
+				collider.remove();
+			};
+		collider = SYS_collisionManager.newCollider(SHIELD, 0, 4, 8, hit);
+		that.removed = false;
+		that.changeImage(image);
+		that.draw(x, y);
+		collider.update(x, y);
+	},
+	brickLayout = [
+		1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 5,
+		3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+		3, 3, 3, 6, 7, 0, 0, 8, 9, 3, 3, 3,
+		3, 3, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3];
+	for (var i = 0; i < brickLayout.length; i++) {
+		if (brickLayout[i]) {
+			shieldBrick(x + ((i % 12) * 4), y + (Math.floor(i / 12) * 8),
+			brickLayout[i] + 8);
+		}
+	}
+};
+// 飞碟			
+var saucer = function (gameCallback) {
+	var dx = (Math.floor(Math.random() * 2) * 2) - 1,
+		x = 0;
+		dx *= 1.25;
+		if (dx < 0) {
+			x = SCREEN_WIDTH - 32;
+		}
+	var that = DHTMLSprite(SYS_spriteParams);
+	that.changeImage(20);
+	var remove = function () {
+		that.destroy();
+		collider.remove();
+		that.removed = true;
+	};
+	var hit = function () {
+		remove();
+		gameCallback({
+			message: 'saucerHit',
+			x: x,
+			y: 32
+		});
+	};
+	var collider = SYS_collisionManager.newCollider(SAUCER, 0, 32, 14, hit);
+	that.move = function () {
+		that.draw(x, 32);
+		collider.update(x, 32);
+		x += dx;
+		if (x < 0 || x > SCREEN_WIDTH - 32) {
+			remove();
+		}
+	};
+	SYS_process.add(that);
+};
+// 游戏流程
+var game = function () {
+	var time,
+		aliens,
+		gameState = 'titleScreen',
+		aliensStartY,
+		lives,
+		score = 0,
+		highScore = 0,
+		extraLifeScore = 0,
+		saucerTimeout = 0,
+		newTankTimeout,
+		newWaveTimeout,
+		gameOverFlag = false,
+		// 标题画面显示的信息
+		startText = 
+			'<div class="message">' +
+			'<p>----太空侵略者----</p>' +
+			'<p>按“开火”键以开始游戏</p>' +
+			'<p>Z = 左移</p>' +
+			'<p>X = 右移</p>' +
+			'<p>M = 开火</p>' + 
+			'<p>每5000分增加一个生命</p>' +
+			'<p>2013 SOGA Presents</p>' +
+			'</div>',
+		// 初始化护盾
+		initShields = function () {
+			for (var x = 0; x < 4; x++) {
+				Shield((SCREEN_WIDTH / 2) - 192 + 12 + (x * 96), SHIELD_Y);
+			}
+		},
+		// 更新分数
+		updateScores = function () {
+			if (score - extraLifeScore >= 5000) {
+				extraLifeScore += 5000;
+				lives++;
+			}
+			if (!$('#score').length) {
+				$('#draw-target').append('<div id="score"></div>' +
+					'<div id="lives"></div><div id="highScore"></div>');
+			}
+			if (score > highScore){
+				highScore = score;
+			}
+			$('#score').text('得分: ' + score);
+			$('#highScore').text('最高得分: ' + highScore);
+			$('#lives').text('生命数: ' + lives);
+		},
+		// 生成一个飞碟
+		newSaucer = function () {
+			clearTimeout(saucerTimeout);
+			saucerTimeout = setTimeout(function () {
+				saucer(gameCallback);
+				newSaucer();
+			},(Math.random() * 5000) + 15000);
+		},
+		// 回调函数，检查收到的消息
+		gameCallback = function (messageObj) {
+			if (gameOverFlag) {
+				return;
+			}
+			switch (messageObj.message) {
+				case 'alienKilled' :
+					score += messageObj.score;
+					updateScores();
+					break;
+				case 'saucerHit' :
+					var pts = Math.floor((Math.random() * 3) + 1);
+					score += pts * 50;
+					updateScores();
+					animEffect(messageObj.x, messageObj.y, [pts + 20], 500);
+					break;
+				case 'playerKilled' :
+					aliens.pauseAliens(2500);
+					lives--;
+					updateScores();
+					if (!lives) {
+						gameOver();
+					}else{
+						newTankTimeout = setTimeout(function () {
+							tank(gameCallback);
+						}, 2000);
+					}
+					break;
+				case 'allAliensKilled':
+					if (aliensStartY < 160) {
+						aliensStartY += 32;
+					}
+					newWaveTimeout = setTimeout(function () {
+						init();
+					}, 2000);
+					break;
+				case 'aliensAtBottom':
+					gameOver();
+					break;
+			}
+		},
+		// 初始化
+		init = function () {
+			$('#draw-target').children().remove();
+			SYS_process = processor();
+			SYS_collisionManager = collisionManager();
+			aliens = aliensManager(gameCallback, aliensStartY);
+			setTimeout(function () {
+				tank(gameCallback);
+			}, 2000);
+			initShields();
+			newSaucer();
+			updateScores();
+		},
+		// 游戏结束
+		gameOver = function () {
+			gameOverFlag = true;
+			clearTimeout(newTankTimeout);
+			clearTimeout(newWaveTimeout);
+			clearTimeout(saucerTimeout);
+			setTimeout(function () {
+				$("#draw-target").children().remove();
+				$("#draw-target").append('<div class="message">' +
+					'<p> *** GAME OVER ***</p></div>' + startText);
+				gameState = 'titleScreen';
+			},2000);
+		},
+		// 游戏循环（核心部分）
+		gameLoop = function () {
+			switch (gameState) {
+				case 'playing':
+					SYS_timeInfo = time.getInfo();
+					SYS_process.process();
+					SYS_collisionManager.checkCollisions();
+					break;
+				case 'titleScreen':
+					if (keys.fire) {
+						gameOverFlag = false;
+						time = timeInfo(60);
+						keys.fire = 0;
+						lives = 3;
+						score = 0;
+						extraLifeScore = 0;
+						aliensStartY = 64;
+						gameState = 'playing';
+						init();
+					}
+			}
+			setTimeout(gameLoop, 15);
+		};
+	$("#draw-target").append(startText);
+	gameLoop();
+}();			
+});		
+</script>
+</head>
+<body>
+	<div id="draw-target"> </div>
+</body>
+</html>

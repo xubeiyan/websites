@@ -1,0 +1,131 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-color: #060c21;
+    --number-color: rgba(255, 255, 255, .05);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+}
+
+.container {
+    position: relative;
+    width: 90%;
+    display: flex;
+    gap: 40px;
+}
+
+.container > .box {
+    position: relative;
+    height: 500px;
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* border: 1px solid black; */
+}
+
+.container > .box::before {
+    content: '';
+    position: absolute;
+    inset: -2px -2px -2px -2px;
+    background-color: white;
+    z-index: -1;
+    transform: skew(2deg, 2deg);
+}
+
+.container > .box:nth-child(1)::before {
+    background: linear-gradient(315deg, #ff0057, #e64a19);
+}
+.container > .box:nth-child(2)::before {
+    background: linear-gradient(315deg, #89ff00, #00bcd4);
+}
+.container > .box:nth-child(3)::before {
+    background: linear-gradient(315deg, #e91e63, #5d02ff);
+}
+.container > .box:nth-child(4)::before {
+    background: linear-gradient(315deg, #ff0000, #ffc107);
+}
+
+.container > .box::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60%;
+    height: 100%;
+    background-color: var(--number-color);
+    z-index: 1;
+}
+
+.content {
+    position: relative;
+    top: 40px;
+    padding: 20px;
+    z-index: 5;
+}
+
+.content > h2 {
+    position: absolute;
+    top: -40px;
+    right: 20px;
+    margin: 0;
+    padding: 0;
+    font-size: 10em;
+    color: var(--number-color);
+    transition: top 0.5s;
+}
+
+.box:hover > .content > h2 {
+    top: -100px;
+}
+
+.content > h3 {
+    margin-bottom: 10px;
+    padding: 0;
+    font-size: 2em;
+    font-weight: 500;
+    color: white;
+}
+
+.content > p {
+    margin: 0;
+    padding: 0;
+    color: white;
+    font-size: 1em;
+}
+
+.content > a {
+    margin-top: 1em;
+    padding: 10px 20px;
+    text-decoration: none;
+    border: 1px solid white;
+    color: white;
+    transition-duration: .5s;
+    display: inline-block;
+    transform: translateY(-40px);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 10;
+}
+
+
+.box:hover > .content > a {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+.content > a:hover {
+    background-color: white;
+    color: black;
+}

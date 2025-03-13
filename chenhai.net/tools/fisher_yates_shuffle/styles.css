@@ -1,0 +1,100 @@
+html,
+body {
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  align-items: center;
+  padding-top: 5em;
+}
+
+.dark {
+  color: white;
+}
+
+.dark body {
+  background: #333;
+}
+
+.dark textarea {
+  background: #666;
+  color: white;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  width: clamp(50%, 40em, 90%);
+}
+
+label > textarea {
+  min-height: 20em;
+  font-size: large;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+button {
+  border: none;
+  background: linear-gradient(to right top, #a2d2df, #f6efbd);
+  width: 6em;
+  height: 2em;
+  font-size: large;
+  border-radius: 0.5em;
+  cursor: pointer;
+}
+
+button:hover,
+button:focus-within,
+button:focus {
+  outline: 2px solid lightblue;
+  outline-offset: 2px;
+}
+
+label#darkSwitch {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5em;
+  --light-switch-color: white;
+  --dark-switch-color: #333;
+}
+
+label#darkSwitch > div {
+  border-radius: 1em;
+  width: 3.5em;
+  height: 2em;
+  padding: 0.1em;
+  background: #a2d2df;
+}
+
+label#darkSwitch > div > span {
+  display: inline-block;
+  border-radius: 0.9em;
+  width: 1.8em;
+  height: 1.8em;
+  background: var(--light-switch-color);
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+
+label#darkSwitch:has(input:checked) > div {
+  background: #92c2cf;
+}
+
+label#darkSwitch:has(input:checked) > div > span {
+  translate: 1.4em;
+  background: var(--dark-switch-color);
+}
+
+label#darkSwitch > input {
+  display: none;
+}

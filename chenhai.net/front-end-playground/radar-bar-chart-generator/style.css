@@ -1,0 +1,5 @@
+.chart-option {
+  display: flex;
+  flex-direction: column;
+  width: 40em;
+}
