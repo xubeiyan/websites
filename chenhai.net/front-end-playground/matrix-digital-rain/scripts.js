@@ -1,9 +1,9 @@
 const canvas = document.getElementById("Matrix");
 const context = canvas.getContext("2d");
 
-const katakana = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ";
-const latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const nums = "0123456789";
+const katakana = "アウエオカキケコサシスセソタツテナニヌネハヒホマミムメモヤヨラリワー";
+const latin = "*+:<>z|¦╌▪꞊";
+const nums = "012345789";
 
 const alphabet = katakana + latin + nums;
 
