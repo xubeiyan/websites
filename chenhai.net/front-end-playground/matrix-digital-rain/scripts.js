@@ -32,7 +32,8 @@ const draw = () => {
     }
 };
 
-let fps, fpsInterval, now, then, elapsed;
+let fps = 15;
+let fpsInterval, now, then, elapsed;
 let animateId = null;
 
 const animate = () => {
@@ -47,7 +48,7 @@ const animate = () => {
     }
 };
 
-const startAnimating = (fps) => {
+const startAnimating = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -58,9 +59,9 @@ const startAnimating = (fps) => {
     animate();
 };
 
-startAnimating(15);
+startAnimating();
 
 window.addEventListener("resize", () => {
     cancelAnimationFrame(animateId);
-    startAnimating(15);
+    startAnimating();
 });
