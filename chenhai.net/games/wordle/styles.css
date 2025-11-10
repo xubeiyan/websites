@@ -18,10 +18,10 @@ body {
     background-color: var(--bg-color);
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: 100svh;
     margin: 0;
-    padding: 1em;
-    font-size: clamp(.5rem, 2.5vmin, 1.5rem);
+    padding: 1rem;
+    font-size: clamp(.5rem, 3.5vmin, 1.5rem);
 }
 
 .header {
@@ -45,12 +45,13 @@ body {
     pointer-events: none;
     color: white;
     background-color: dimgray;
-    border-radius: 1em;
-    padding-bottom: 2em;
+    border-radius: 1rem;
+    padding-bottom: 3rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: clamp(10rem, 80vw, 40rem);
 }
 
 .game-tutorial.show {
@@ -69,7 +70,8 @@ body {
     font-size: 1em;
     background-color: beige;
     text-align: center;
-    border-radius: .25em;
+    border-radius: .25rem;
+    line-height: 2rem;
 }
 
 .guess-grid {
@@ -77,16 +79,16 @@ body {
     justify-content: center;
     align-content: center;
     flex-grow: 1;
-    grid-template-columns: repeat(5, 4em);
-    grid-template-rows: repeat(6, 4em);
+    grid-template-columns: repeat(5, 4rem);
+    grid-template-rows: repeat(6, 4rem);
     gap: .25rem;
-    margin-bottom: 1em;
+    margin-bottom: 1rem;
 }
 
 .tile {
-    font-size: 2em;
+    font-size: 2rem;
     color: white;
-    border: .05em solid var(--tile-border-color);
+    border: .05rem solid var(--tile-border-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -172,8 +174,8 @@ body {
 .keyboard {
     display: grid;
     grid-template-columns: repeat(20, minmax(auto, 1.25em));
-    grid-auto-rows: 3em;
-    gap: .25em;
+    grid-auto-rows: 3rem;
+    gap: .25rem;
     justify-content: center;
 }
 
@@ -192,7 +194,7 @@ body {
     );
     color: white;
     fill: white;
-    border-radius: .25em;
+    border-radius: .25rem;
     cursor: pointer;
     user-select: none;
 }
@@ -254,4 +256,10 @@ body {
 
 .alert.hide {
     opacity: 0;
+}
+
+ol {
+    list-style-position: inside;
+    padding-inline-start: 0;
+    padding-inline: 2rem;
 }
